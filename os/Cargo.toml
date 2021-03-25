@@ -13,4 +13,4 @@ panic = "abort"
 panic = "abort"
 
 [dependencies]
-
+riscv = {path = "src/riscv"}
