@@ -57,7 +57,7 @@ pub extern "C" fn rust_main() -> ! {
 		};
 		println!("{} and {}", frame_0.address(), frame_1.address());
 	}
-	panic!()
+	sbi::shutdown();
 }
 
 
