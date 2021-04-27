@@ -25,38 +25,15 @@ global_asm!(include_str!("entry.asm"));
 
 #[no_mangle]
 pub extern "C" fn rust_main() -> ! {
-	// 初始化各种模块
-	interrupt::init();
-	memory::init();
+	 // 初始化各种模块
+    interrupt::init();
+    memory::init();
 
-	// 动态内存分配测试
-	use alloc::boxed::Box;
-	use alloc::vec::Vec;
-	let v = Box::new(5);
-	assert_eq!(*v, 5);
-	core::mem::drop(v);
+    let remap = memory::mapping::MemorySet::new_kernel().unwrap();
+    remap.activate();
 
-	let mut vec = Vec::new();
-	for i in 0..10000 {
-		vec.push(i);
-	}
-	assert_eq!(vec.len(), 10000);
-	for (i, value) in vec.into_iter().enumerate() {
-		assert_eq!(value, i);
-	}
-	println!("heap test passed by Guo Yao");
-	println!("{}", *memory::config::KERNEL_END_ADDRESS);
-	for _ in 0..2 {
-		let frame_0 = match memory::frame::FRAME_ALLOCATOR.lock().alloc() {
-			Result::Ok(frame_tracker) => frame_tracker,
-			Result::Err(err) => panic!("{}", err)
-		};
-		let frame_1 = match memory::frame::FRAME_ALLOCATOR.lock().alloc() {
-			Result::Ok(frame_tracker) => frame_tracker,
-			Result::Err(err) => panic!("{}", err)
-		};
-		println!("{} and {}", frame_0.address(), frame_1.address());
-	}
+    println!("kernel remapped by Guo Yao");
+
 	sbi::shutdown();
 }
 
